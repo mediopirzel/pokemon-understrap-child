@@ -92,3 +92,9 @@ function understrap_child_customize_controls_js() {
 	);
 }
 add_action( 'customize_controls_enqueue_scripts', 'understrap_child_customize_controls_js' );
+
+/**
+ *  Pokemon custom post type
+ */
+
+include_once dirname(__FILE__).'/inc/pokemon-custom-post-types.php';
