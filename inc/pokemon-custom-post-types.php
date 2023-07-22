@@ -2,14 +2,17 @@
 
  function pokemon_post_types() {
 
-  // Pokemon Post Type
+  // Crate Pokémon Post Type
   $pokemon_labels = array(
-    'name' => __('Pokemons'),
-    'add_new_item' => __('Add New Pokemon'),
-    'edit_item' => __('Edit Pokemon'),
-    'all_items' => __('All Pokemons'),
-    'singular_name' => __('Pokemon')
+    'name' => __('Pokémons'),
+    'add_new_item' => __('Add New Pokémon'),
+    'edit_item' => __('Edit Pokémon'),
+    'all_items' => __('All Pokémons'),
+    'singular_name' => __('Pokémon')
   );
+  $menu_icon = file_get_contents( get_stylesheet_directory('/img/pokemon-icon.svg'));
+
+    // $menu_icon =  get_stylesheet_directory('img/pokemon-icon.svg');
 
    $pokemon_args = array(
     'map_meta_cap' => true,
@@ -20,12 +23,11 @@
     'public' => true,
     'labels' => $pokemon_labels,
     // TO DO ICON
-    'menu_icon' => 'dashicons-location-alt'
+    "menu_icon" => "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwcHgiIGhlaWdodD0iODAwcHgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0zIDEyQzMgNy4wMjk0NCA3LjAyOTQ0IDMgMTIgM0MxNi45NzA2IDMgMjEgNy4wMjk0NCAyMSAxMkMyMSAxNi45NzA2IDE2Ljk3MDYgMjEgMTIgMjFDNy4wMjk0NCAyMSAzIDE2Ljk3MDYgMyAxMlpNNS4wNzA4OSAxM0M1LjU1NjEyIDE2LjM5MjMgOC40NzM1MyAxOSAxMiAxOUMxNS41MjY1IDE5IDE4LjQ0MzkgMTYuMzkyMyAxOC45MjkxIDEzSDE0LjgyOTNDMTQuNDE3NCAxNC4xNjUyIDEzLjMwNjIgMTUgMTIgMTVDMTAuNjkzOCAxNSA5LjU4MjUxIDE0LjE2NTIgOS4xNzA2OCAxM0g1LjA3MDg5Wk0xOC45MjkxIDExQzE4LjQ0MzkgNy42MDc3MSAxNS41MjY1IDUgMTIgNUM4LjQ3MzUzIDUgNS41NTYxMiA3LjYwNzcxIDUuMDcwODkgMTFIOS4xNzA2OEM5LjU4MjUxIDkuODM0ODEgMTAuNjkzOCA5IDEyIDlDMTMuMzA2MiA5IDE0LjQxNzQgOS44MzQ4MSAxNC44MjkzIDExSDE4LjkyOTFaTTEyIDEzQzEyLjU1MjMgMTMgMTMgMTIuNTUyMyAxMyAxMkMxMyAxMS40NDc3IDEyLjU1MjMgMTEgMTIgMTFDMTEuNDQ3NyAxMSAxMSAxMS40NDc3IDExIDEyQzExIDEyLjU1MjMgMTEuNDQ3NyAxMyAxMiAxM1oiIGZpbGw9IiMwMDAwMDAiLz4KPC9zdmc+"
   );
-
-
   register_post_type('pokemon', $pokemon_args);
-  
+    
+  // Create Attacks taxonomy
 	$attack_labels = array(
 		'name'              => __('Attacks'),
 		'singular_name'     => __('Attacks'),
@@ -53,8 +55,9 @@
 	register_taxonomy( 'attack', array( 'pokemon' ), $attack_args );
 
 
+  // Create metabox for aditional fields
   function pokemon_metabox() {
-    add_meta_box( 'pokemon-fields', __('Pokemon Additional Data'), 'pokemon_meta_box_content', 'pokemon', 'normal', 'high' );
+    add_meta_box( 'pokemon-fields', __('Pokémon Additional Data'), 'pokemon_meta_box_content', 'pokemon', 'normal', 'high' );
   }
   add_action( 'add_meta_boxes', 'pokemon_metabox' );
   
@@ -65,6 +68,7 @@
     $primary = get_post_meta( $post->ID, 'pokemon_primary', true );
     $secondary = get_post_meta( $post->ID, 'pokemon_secondary', true );
     $old_pokedex = get_post_meta( $post->ID, 'pokemon_podekedex_num_old', true );
+    $old_pokedex_name = get_post_meta( $post->ID, 'pokemon_podekedex_name_old', true );
     $new_pokedex = get_post_meta( $post->ID, 'pokemon_podekedex_num_new', true );
 
 
@@ -99,14 +103,17 @@
     <p>
     <h3><?php _e('Pokedex Numbers') ?></h3>
     <p>
+        <label for="pokemon_podekedex_num_new"><?php _e('Newest') ?></label>
+        <input type="number" name="pokemon_podekedex_num_new" id="pokemon_podekedex_num_new" value="<?php echo  esc_attr($new_pokedex); ?>" />
+    </p>
+    <p>
         <label for="pokemon_podekedex_num_old"><?php _e('Oldest') ?></label>
         <input type="number" name="pokemon_podekedex_num_old" id="pokemon_podekedex_num_old" value="<?php echo  esc_attr($old_pokedex); ?>" />
     </p>
     <p>
-        <label for="pokemon_podekedex_num_new"><?php _e('Newest') ?></label>
-        <input type="number" name="pokemon_podekedex_num_new" id="pokemon_podekedex_num_new" value="<?php echo  esc_attr($new_pokedex); ?>" />
+        <label for="pokemon_podekedex_name_old"><?php _e('Version name') ?></label>
+        <input type="text" name="pokemon_podekedex_name_old" id="pokemon_podekedex_name_old" value="<?php echo  esc_attr($old_pokedex_name); ?>" />
     </p>
-
     <?php
     // echo 'values: ' . $values['pokemon_weight'];  
 }
@@ -160,6 +167,13 @@ add_action( 'save_post', 'misha_save_meta', 10, 2 );
       update_post_meta( $post_id, 'pokemon_podekedex_num_old', sanitize_text_field( $_POST[ 'pokemon_podekedex_num_old' ] ) );
     } else {
       delete_post_meta( $post_id, 'pokemon_podekedex_num_old' );
+    }
+
+
+    if( isset( $_POST[ 'pokemon_podekedex_name_old' ] ) ) {
+      update_post_meta( $post_id, 'pokemon_podekedex_name_old', sanitize_text_field( $_POST[ 'pokemon_podekedex_name_old' ] ) );
+    } else {
+      delete_post_meta( $post_id, 'pokemon_podekedex_name_old' );
     }
 
     if( isset( $_POST[ 'pokemon_podekedex_num_new' ] ) ) {
