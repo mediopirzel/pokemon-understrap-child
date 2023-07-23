@@ -64,7 +64,12 @@ defined( 'ABSPATH' ) || exit;
 				<?php
 
 			}
-
+			?>
+			
+			<div class="pt-4"><a target="_blank" class="btn btn-outline-warning btn-sm" href="<?php echo get_bloginfo( 'url' ). '/wp-json/pokedex/v1/pokemon/'.get_the_ID() ?>" rel="noreferrer noopener">
+				<?php _e('View in JSON format')?>
+			</a></div>
+			<?php
 
 			understrap_link_pages();
 			?>

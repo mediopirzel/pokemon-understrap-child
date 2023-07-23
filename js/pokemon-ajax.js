@@ -14,11 +14,7 @@
         action: 'pokemon-ajax',
         id_post: id,
       },
-      beforeSend: function () {
-        // link.html('Cargando ...');
-        // $(this).html('loading...');
-        // console.log('loading');
-      },
+      beforeSend: function () {},
       success: function (result) {
         link.removeClass('btn-outline-primary');
         link.addClass('btn-outline-success');
