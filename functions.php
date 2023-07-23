@@ -100,7 +100,7 @@ add_action( 'customize_controls_enqueue_scripts', 'understrap_child_customize_co
 
  function pokemon_files() {
 	wp_enqueue_script('pokemon-ajax', get_theme_file_uri('/js/pokemon-ajax.js'), array('jquery'), '1.0', true);
-	wp_encue_script('pokemon-insert', get_theme_file_uri('/js/pokemon-insert.js'), false, '1.0', true);
+	wp_enqueue_script('pokemon-insert', get_theme_file_uri('/js/pokemon-insert.js'), false, '1.0', true);
 	// wp_enqueue_style('custom-google-fonts', '//fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,400,400i,700,700i|Roboto:100,300,400,400i,700,700i');
 	// wp_enqueue_style('font-awesome', '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 	// wp_enqueue_style('university_main_styles', get_theme_file_uri('/build/style-index.css'));
@@ -112,7 +112,7 @@ add_action( 'customize_controls_enqueue_scripts', 'understrap_child_customize_co
 	  'loadedText'=> __('Loaded')
 	));
 
-	wp_localize_script('pokemon-insert','pokemonData',array(
+	wp_localize_script('pokemon-insert','wordpressData',array(
 		'root_url'=> get_site_url(),
 		'nonce'=> wp_create_nonce('wp_rest'),
 	  ));

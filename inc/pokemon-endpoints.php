@@ -11,7 +11,7 @@ function pokemonRoutes(){
         'callback'=> 'pokedexIDResults'
     ) );
 
-    // END POINT 2 - showing a pokémon with all info 
+    // END POINT 2 - passing the wordpress id shows a pokémon with all info 
     // Ex: your-domain/wp-json/pokedex/v1/pokemon/{id} 
     register_rest_route( 'pokedex/v1', 'pokemon/(?P<id>\d+)', array(
         'methods'=> WP_REST_SERVER::READABLE,
@@ -28,8 +28,8 @@ function pokemonRoutes(){
         // END POINT 3 - Insert a Random Pokémon from pokeAPI 
         // Ex: your-domain/wp-json/pokedex/v1/create 
         register_rest_route( 'pokedex/v1', 'create', array(
-            'methods' => 'GET',
-            'callback' => 'createPokemon'
+            'methods' => 'POST',
+            'callback' => 'insertPokemon'
         ));
 
 
@@ -114,19 +114,122 @@ function pokemonRoutes(){
             return $singlePokemon;
           }
 
-          function createPokemon($data){
-            $user = wp_get_current_user();
-            die(var_dump($user));
+          function insertPokemon($data){
+
+     
+
             if(is_user_logged_in()){
-                die('User is logged in');
-            }   
-            else {
+
+                $newPokemon = wp_insert_post( array(
+                    'post_type' => 'pokemon',  
+                    'post_status'=> 'publish',
+                    'post_title'=> 'Pokemon',
+                    'post_content' => 'hola que tal',
+                    'meta_input' => array(
+                        'pokemon_weight' => '115',
+                        'pokemon_primary' => 'grass',
+                        'pokemon_secondary' => 'steel',
+                        'pokemon_podekedex_num_new' => '14',
+                        'pokemon_podekedex_num_old' => '4',
+                        'pokemon_podekedex_name_old' => 'green',
+                    )
+                    
+                )  );
+
+                if($newPokemon >= 1){
+                   // FAREM LA INESERCIÓ 
+                }
+
+                insertFeaturedImage($newPokemon);
+        
+
+                return $newPokemon;
+
+                
+                // $pokemon = sanitize_text_field($data['name']);
+
+        
+                // $existPokemonm =  new WP_Query(array(
+                //     'post_type' => 'pokemon',
+                //     'numberposts'   => -1,
+                //     'name' => $pokemon,
+                //     'name' => $pokemon,
+                //     )) ;
+        
+                // // ens assegurem que no existeixi cap votació i que el id de professor és de tipus professor.
+                // if($existPokemonm->found_posts == 0 ){
+                //     // Retornarà el ID del post nou insertat com a resposta
+                //     return wp_insert_post( array(
+                //         'post_type' => 'pokemon',  
+                //         'post_status'=> 'publish',
+                //         'post_title'=> 'New Poquemon',
+                //         /*
+                //         'meta_input' => array(
+                //             'liked_professor_id' => $professor
+                //         )
+                //         */
+                //     )  );
+                // } else {
+                //     die('invalid professor id');
+                // }
+        
+        
+        
+            } else {
                 die('Only logged in user can create a like.');
             }
-
-          }
+        
+            
+        }
+        
     
 }
 
 
 
+
+function insertFeaturedImage($post_id){
+    // Add Featured Image to Post
+$image_url        = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/45.png'; // Define the image URL here
+$image_name       = 'wp-header-logo.png';
+$upload_dir       = wp_upload_dir(); // Set upload folder
+$image_data       = file_get_contents($image_url); // Get image data
+$unique_file_name = wp_unique_filename( $upload_dir['path'], $image_name ); // Generate unique name
+$filename         = basename( $unique_file_name ); // Create image file name
+
+// Check folder permission and define file location
+if( wp_mkdir_p( $upload_dir['path'] ) ) {
+    $file = $upload_dir['path'] . '/' . $filename;
+} else {
+    $file = $upload_dir['basedir'] . '/' . $filename;
+}
+
+// Create the image  file on the server
+file_put_contents( $file, $image_data );
+
+// Check image file type
+$wp_filetype = wp_check_filetype( $filename, null );
+
+// Set attachment data
+$attachment = array(
+    'post_mime_type' => $wp_filetype['type'],
+    'post_title'     => sanitize_file_name( $filename ),
+    'post_content'   => '',
+    'post_status'    => 'inherit'
+);
+
+// Create the attachment
+$attach_id = wp_insert_attachment( $attachment, $file, $post_id );
+
+// Include image.php
+require_once(ABSPATH . 'wp-admin/includes/image.php');
+
+// Define attachment metadata
+$attach_data = wp_generate_attachment_metadata( $attach_id, $file );
+
+// Assign metadata to attachment
+wp_update_attachment_metadata( $attach_id, $attach_data );
+
+// And finally assign featured image to post
+set_post_thumbnail( $post_id, $attach_id );
+}
