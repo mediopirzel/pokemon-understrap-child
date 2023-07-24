@@ -25,12 +25,12 @@ function pokemonRoutes(){
             ),
         ) );
 
-        // END POINT 3 - Insert a Random Pokémon from pokeAPI 
-        // Ex: your-domain/wp-json/pokedex/v1/create 
-        register_rest_route( 'pokedex/v1', 'create', array(
-            'methods' => 'POST',
-            'callback' => 'insertPokemon'
-        ));
+    // END POINT 3 - Insert a Random Pokémon from pokeAPI 
+    // Ex: your-domain/wp-json/pokedex/v1/create 
+    register_rest_route( 'pokedex/v1', 'create', array(
+        'methods' => 'POST',
+        'callback' => 'insertPokemon'
+    ));
 
 
     function pokedexIDResults(){
@@ -116,34 +116,48 @@ function pokemonRoutes(){
 
           function insertPokemon($data){
 
-     
+            if(current_user_can( 'edit_posts' )){
+                // API id and pokedex num can change in newest versions of game
+                // Use oldest pokedex num as id to check if pokemon is on database.
+                $existPokemon =  new WP_Query(array(
+                        'post_type' => 'pokemon',
+                        'meta_query'    => array(
+                            array(           
+                              'key'       => 'pokemon_podekedex_num_old',
+                              'value'     => $data['pokemonPodekedexNumOld'],
+                              'compare'   => '='
+                              )
+                            )
+                        )) ;
 
-            if(is_user_logged_in()){
-
-                $newPokemon = wp_insert_post( array(
-                    'post_type' => 'pokemon',  
-                    'post_status'=> 'publish',
-                    'post_title'=> 'Pokemon',
-                    'post_content' => 'hola que tal',
-                    'meta_input' => array(
-                        'pokemon_weight' => '115',
-                        'pokemon_primary' => 'grass',
-                        'pokemon_secondary' => 'steel',
-                        'pokemon_podekedex_num_new' => '14',
-                        'pokemon_podekedex_num_old' => '4',
-                        'pokemon_podekedex_name_old' => 'green',
-                    )
-                    
-                )  );
-
-                if($newPokemon >= 1){
-                   // FAREM LA INESERCIÓ 
+                if($existPokemon->found_posts == 0 ){
+                    $newPokemon = wp_insert_post( array(
+                        'post_type' => 'pokemon',  
+                        'post_status'=> 'publish',
+                        'post_title'=> $data['postTitle'],
+                        'post_content' => $data['postContent'],
+                        'meta_input' => array(
+                            'pokemon_weight' => $data['pokemonWeight'],
+                            'pokemon_primary' => $data['pokemonPrimary'],
+                            'pokemon_secondary' => $data['pokemonSecondary'],
+                            'pokemon_podekedex_num_new' => $data['pokemonPodekedexNumNew'],
+                            'pokemon_podekedex_num_old' => $data['pokemonPodekedexNumOld'],
+                            'pokemon_podekedex_name_old' => $data['pokemonPodekedexNameOld'],
+                        )
+                        
+                    )  );
+    
+                    if($newPokemon >= 1 && $data['pokemonImage'] ){
+                       insertFeaturedImage($newPokemon, $data['pokemonImage'],$data['postTitle']);
+                    }
+    
+            
+                    // IF SUCCESS RETURN New pokemon ID.
+                    return $newPokemon;
+                } else {
+                    die('This Pokemon is already on database');
                 }
-
-                insertFeaturedImage($newPokemon);
-        
-
-                return $newPokemon;
+                
 
                 
                 // $pokemon = sanitize_text_field($data['name']);
@@ -188,10 +202,12 @@ function pokemonRoutes(){
 
 
 
-function insertFeaturedImage($post_id){
+function insertFeaturedImage($post_id,$image_url,$name){
     // Add Featured Image to Post
-$image_url        = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/45.png'; // Define the image URL here
-$image_name       = 'wp-header-logo.png';
+
+//$image_url  = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/45.png'; // Define the image URL here
+$extension = pathinfo($image_url, PATHINFO_EXTENSION);
+$image_name       = $name.'.'.$extension;
 $upload_dir       = wp_upload_dir(); // Set upload folder
 $image_data       = file_get_contents($image_url); // Get image data
 $unique_file_name = wp_unique_filename( $upload_dir['path'], $image_name ); // Generate unique name
