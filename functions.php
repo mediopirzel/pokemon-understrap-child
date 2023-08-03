@@ -94,17 +94,12 @@ function understrap_child_customize_controls_js() {
 add_action( 'customize_controls_enqueue_scripts', 'understrap_child_customize_controls_js' );
 
 /**
- *  Pokemon custom post type
+ *  Pokemon custom post type scripts
  */
-
 
  function pokemon_files() {
 	wp_enqueue_script('pokemon-ajax', get_theme_file_uri('/js/pokemon-ajax.js'), array('jquery'), '1.0', true);
 	wp_enqueue_script('pokemon-insert', get_theme_file_uri('/js/pokemon-insert.js'), false, '1.0', true);
-	// wp_enqueue_style('custom-google-fonts', '//fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,400,400i,700,700i|Roboto:100,300,400,400i,700,700i');
-	// wp_enqueue_style('font-awesome', '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
-	// wp_enqueue_style('university_main_styles', get_theme_file_uri('/build/style-index.css'));
-	// wp_enqueue_style('university_extra_styles', get_theme_file_uri('/build/index.css'));
   
 	wp_localize_script('pokemon-ajax','pokemonData',array(
 	  'ajaxurl'=> admin_url('admin-ajax.php'),
@@ -123,7 +118,9 @@ add_action( 'customize_controls_enqueue_scripts', 'understrap_child_customize_co
   add_action('wp_enqueue_scripts', 'pokemon_files');
 
 
-  //Devolver datos a archivo js
+/**
+ *  Get data from ajax call in pokemon-ajax.js
+ */
 add_action('wp_ajax_nopriv_pokemon-ajax','pokemon_send_content');
 add_action('wp_ajax_pokemon-ajax','pokemon_send_content');
 
@@ -131,15 +128,15 @@ function pokemon_send_content()
 {
 
 	$id_post = absint($_POST['id_post']);
-	// $content = apply_filters('the_content', get_post_field('post_content', $id_post));
+	// Return oldest pokemon index number and its version name. 
 	$content = get_post_meta( $id_post, 'pokemon_podekedex_num_old' )[0].' ( '.get_post_meta( $id_post, 'pokemon_podekedex_name_old' )[0].' )';
 
 	echo $content;
 
-
+   
 	wp_die();
 }
 
-// TO DO include files like understrap theme does.
+
 include_once dirname(__FILE__).'/inc/pokemon-custom-post-types.php';
 include_once dirname(__FILE__).'/inc/pokemon-endpoints.php';

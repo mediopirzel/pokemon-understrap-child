@@ -132,6 +132,7 @@ function pokemonRoutes(){
 
                 if($existPokemon->found_posts == 0 ){
                     $newPokemon = wp_insert_post( array(
+                        // TODO Sanitize
                         'post_type' => 'pokemon',  
                         'post_status'=> 'publish',
                         'post_title'=> $data['postTitle'],
@@ -157,35 +158,6 @@ function pokemonRoutes(){
                 } else {
                     die('This Pokemon is already on database');
                 }
-                
-
-                
-                // $pokemon = sanitize_text_field($data['name']);
-
-        
-                // $existPokemonm =  new WP_Query(array(
-                //     'post_type' => 'pokemon',
-                //     'numberposts'   => -1,
-                //     'name' => $pokemon,
-                //     'name' => $pokemon,
-                //     )) ;
-        
-                // // ens assegurem que no existeixi cap votació i que el id de professor és de tipus professor.
-                // if($existPokemonm->found_posts == 0 ){
-                //     // Retornarà el ID del post nou insertat com a resposta
-                //     return wp_insert_post( array(
-                //         'post_type' => 'pokemon',  
-                //         'post_status'=> 'publish',
-                //         'post_title'=> 'New Poquemon',
-                //         /*
-                //         'meta_input' => array(
-                //             'liked_professor_id' => $professor
-                //         )
-                //         */
-                //     )  );
-                // } else {
-                //     die('invalid professor id');
-                // }
         
         
         
@@ -204,8 +176,7 @@ function pokemonRoutes(){
 
 function insertFeaturedImage($post_id,$image_url,$name){
     // Add Featured Image to Post
-
-//$image_url  = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/45.png'; // Define the image URL here
+    // More info here: https://www.wpexplorer.com/wordpress-featured-image-url/
 $extension = pathinfo($image_url, PATHINFO_EXTENSION);
 $image_name       = $name.'.'.$extension;
 $upload_dir       = wp_upload_dir(); // Set upload folder

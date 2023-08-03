@@ -55,6 +55,7 @@ class InsertPokemon {
       };
 
       // Pokemon description needs another endpoint
+      // TODO use Promise.allSettled() for both endpoints
       const description = await this.getJSON(
         `${this.pokemonDescriptionUrl}/${data.id}`
       );
@@ -100,7 +101,6 @@ class InsertPokemon {
         this.insertMessage.innerHTML = `<a href="/?p=${answer}" class="btn btn-outline-success">Visit New Pokemon (${answer})</a>`;
       }
     } catch (err) {
-      //console.log(`Something went wrong 🤬 ${err.message}`);
       this.insertMessage.innerHTML = 'Please try Again';
     }
   }

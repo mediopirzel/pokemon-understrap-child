@@ -59,7 +59,11 @@
   
 
   function pokemon_meta_box_content( $post ) {
+    // Array for primary and secondary values
+    // TODO - Find a better solution
     $pokemon_types = array('normal','fighting','flying','poison','ground','rock','bug','ghost','steel', 'fire','water', 'grass','electric', 'psychic', 'ice', 'dragon', 'dark', 'fairy');
+    
+    // Custom Fields
     $weight = get_post_meta( $post->ID, 'pokemon_weight', true );
     $primary = get_post_meta( $post->ID, 'pokemon_primary', true );
     $secondary = get_post_meta( $post->ID, 'pokemon_secondary', true );
@@ -67,7 +71,7 @@
     $old_pokedex_name = get_post_meta( $post->ID, 'pokemon_podekedex_name_old', true );
     $new_pokedex = get_post_meta( $post->ID, 'pokemon_podekedex_num_new', true );
 
-
+    // nonce
     wp_nonce_field( 'save_poke', 'poke_nonce' );
     ?>
     <p>
@@ -78,7 +82,7 @@
     <p>
     <label for="pokemon_primary"><?php esc_html_e('Primary') ?></label>
     <select id="pokemon_primary" name="pokemon_primary">
-      <option value="">Select...</option>
+      <option value=""><?php esc_html_e('Select...'); ?></option>
       <?php 
           foreach ($pokemon_types as $type) {
             echo '<option value="'.$type.'" '.selected( $type, $primary, false ).'>'.ucfirst($type).'</option>';
@@ -89,7 +93,7 @@
     <p>
     <label for="pokemon_secondary"><?php esc_html_e('Secondary') ?></label>
     <select id="pokemon_secondary" name="pokemon_secondary">
-      <option value="">Select...</option>
+      <option value=""><?php esc_html_e('Select...') ;?></option>
       <?php 
           foreach ($pokemon_types as $type) {
             echo '<option value="'.$type.'" '.selected( $type, $secondary, false ).'>'.ucfirst($type).'</option>';
@@ -111,13 +115,11 @@
         <input type="text" name="pokemon_podekedex_name_old" id="pokemon_podekedex_name_old" value="<?php echo  esc_attr($old_pokedex_name); ?>" />
     </p>
     <?php
-    // echo 'values: ' . $values['pokemon_weight'];  
 }
 
-add_action( 'save_post', 'misha_save_meta', 10, 2 );
-// or add_action( 'save_post_{post_type}', 'misha_save_meta', 10, 2 );
+add_action( 'save_post', 'pokemon_save_meta', 10, 2 );
 
-  function misha_save_meta( $post_id, $post ) {
+  function pokemon_save_meta( $post_id, $post ) {
 
     // nonce check
     if ( ! isset( $_POST[ 'poke_nonce' ] ) || ! wp_verify_nonce( $_POST[ 'poke_nonce' ], 'save_poke' ) ) {
